@@ -1,14 +1,16 @@
+# %%
 import numpy as np
 
 # Define gridworld dimensions and parameters
-GRID_SIZE = 5
-GOAL_STATE = (0, 4)  # (2,2) in 0-indexed grid
-PENALTY_STATE1 = (1, 4)  # (2,1) in 0-indexed grid
-PENALTY_STATE2 = (2, 1)
-REWARD_GOAL = 100
-REWARD_PENALTY = -1000
-TIME_HORIZON = 9
-ACTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # Up, Down, Left, Right
+GRID_SIZE = 3
+GOAL_STATE = (0, 2)  # (1,1) in 0-indexed grid
+PENALTY_STATE1 = (1, 2)  # (2,1) in 0-indexed grid
+PENALTY_STATE2 = (1, 1)
+REWARD_GOAL = 1
+REWARD_PENALTY = -10
+TIME_HORIZON = 5
+ACTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1), (0, 0)]  # Up, Down, Left, Right
+ACTIONS_STRING = ["Up", "Down", "Left", "Right", "Stay"]
 
 # Initialize value function
 value_function = np.zeros((GRID_SIZE, GRID_SIZE, TIME_HORIZON + 1))
@@ -52,21 +54,21 @@ policy = np.full((GRID_SIZE, GRID_SIZE), None)
 for x in range(GRID_SIZE):
     for y in range(GRID_SIZE):
         state = (x, y)
-        best_action = None
+        best_action_index = None
         max_value = float('-inf')
-        for action in ACTIONS:
+        for (i, action) in enumerate(ACTIONS):
             next_s = next_state(state, action)
+            if next_s == state and action != (0, 0):
+                continue
             current_value = reward(state) + value_function[next_s[0], next_s[1], 1]
             if current_value > max_value:
                 max_value = current_value
-                best_action = action
+                best_action = ACTIONS_STRING[i]
         policy[x, y] = best_action
-
-# Print results
-print("Value Function at t=0:")
-print(value_function[:, :, 0])
 
 print("\nOptimal Policy:")
 for x in range(GRID_SIZE):
     print([policy[x, y] for y in range(GRID_SIZE)])
 
+
+# %%
